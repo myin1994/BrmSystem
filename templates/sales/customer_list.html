@@ -1,0 +1,58 @@
+{% extends 'starter.html' %}
+{#{% load my_tags %}#}
+{% block title %}
+    公户信息展示
+{% endblock %}
+
+{% block content %}
+    <a href="{% url 'app01:customer_add' %}" class="btn btn-primary">添加客户</a>
+    <form class="navbar-form navbar-left" role="search" method="get">
+        <div class="input-group mb-3">
+            <div class="input-group-prepend">
+                <select class="form-control" name="search_model">
+                    <option value="qq__icontains">QQ</option>
+                    <option value="name__icontains">姓名</option>
+                </select>
+            </div>
+            <input type="text" class="form-control" placeholder="Search" aria-label="Recipient's username"
+                   aria-describedby="button-addon2" name="search_value">
+            <div class="input-group-append">
+                <button class="btn btn-outline-secondary" type="submit" id="button-addon2">搜索</button>
+            </div>
+        </div>
+    </form>
+    <table class="table table-bordered table-hover table-striped">
+        <thead>
+        <tr>
+            <th>序号</th>
+            <th>QQ</th>
+            <th>姓名</th>
+            <th>性别</th>
+            <th>客户来源</th>
+            <th>咨询课程</th>
+            <th>状态</th>
+            <th>销售</th>
+            <th>操作</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for customer in all_customers_filter %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ customer.qq }}</td>
+                <td>{{ customer.name }}</td>
+                <td>{{ customer.get_sex_display }}</td>
+                <td>{{ customer.get_source_display }}</td>
+                <td>{{ customer.get_course_display }}</td>
+                <td>{{ customer.get_status_display }}</td>
+                <td>{{ customer.consultant.username|default:'暂无' }}</td>
+                <td>
+                    <a href="{% url 'app01:customer_edit' customer.id request.GET.page|default:1 %}" title="编辑"><i class="fa fa-pencil"></i>&nbsp;</a>
+                    |<a href="{% url 'app01:customer_del' customer.id request.GET.page|default:1 %}" title="删除">&nbsp;<i class="fa fa-remove"></i></a>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    {{ page_html|safe }}
+{% endblock %}

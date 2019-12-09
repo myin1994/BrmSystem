@@ -48,6 +48,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'app01.mymiddleware.login_sign.Login_sign',
 ]
 
 ROOT_URLCONF = 'DjangoCRM.urls'
@@ -75,22 +76,22 @@ WSGI_APPLICATION = 'DjangoCRM.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
-}
 # DATABASES = {
 #     'default': {
-#         'ENGINE': 'django.db.backends.mysql',
-#         'NAME':'bms', # 要连接的数据库，连接前需要创建好
-#         'USER':'root',# 连接数据库的用户名
-#         'PASSWORD':'77963333', # 连接数据库的密码
-#         'HOST':'127.0.0.1',  # 连接主机，默认本机
-#         'PORT':3306 #  端口 默认3306
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
 #     }
 # }
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME':'CrmSystem', # 要连接的数据库，连接前需要创建好
+        'USER':'root',# 连接数据库的用户名
+        'PASSWORD':'77963333', # 连接数据库的密码
+        'HOST':'127.0.0.1',  # 连接主机，默认本机
+        'PORT':3306 #  端口 默认3306
+    }
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/1.11/ref/settings/#auth-password-validators
