@@ -13,7 +13,7 @@ class Paginaton:
         """
         try:
             self.current_page = int(current_page)
-        except TypeError:
+        except (TypeError, ValueError):
             # 取不到或者页码数不是数字都默认展示第1页
             self.current_page = 1
         # 定义每页显示多少条数据
@@ -26,7 +26,14 @@ class Paginaton:
         # 定义页面上最多显示多少页码(为了左右对称，一般设为奇数)
         self.max_show = max_show
         self.half_show = max_show // 2
-        self.get_data = get_data
+        self.get_data = get_data.copy()
+
+        # 当用户访问的当前页面大于等于总页码数时,让当前页面等于总页码数
+        if self.current_page >= self.total_page:
+            self.current_page = self.total_page
+        # 当用户访问的当前页面小于等于0时,让当前页面等于1（放在后面防止查询数据为零的情况）
+        if self.current_page <= 0:
+            self.current_page = 1
 
     @property
     def start(self):
@@ -43,14 +50,14 @@ class Paginaton:
             page_end = self.total_page
         elif self.current_page + self.half_show >= self.total_page:  # 右边越界
             page_end = self.total_page
-            page_start = self.total_page - self.max_show
+            page_start = self.total_page - self.max_show + 1
         elif self.current_page - self.half_show <= 1:  # 左边越界
             page_start = 1
             page_end = self.max_show
         else:  # 正常页码区间
             page_start = self.current_page - self.half_show
             page_end = self.current_page + self.half_show
-            # 生成页面上显示的页码
+        # 生成页面上显示的页码
         page_html_list = list()
         page_html_list.append('<nav aria-label="Page navigation example"><ul class="pagination">')
         # 加首页
@@ -59,8 +66,8 @@ class Paginaton:
         page_html_list.append(first_li)
         # 加上一页
         if self.current_page == 1:
-            prev_li = '<li class="page-item">' \
-                      '<a class="page-link" href=""><span aria-hidden="true">&laquo;</span></a></li>'
+            prev_li = '<li class="page-item"><a class="page-link" href="javascript: void (0);">' \
+                      '<span aria-hidden="true">&laquo;</span></a></li>'
         else:
             self.get_data['page'] = self.current_page - 1
             prev_li = f'<li class="page-item"><a class="page-link" href="?{self.get_data.urlencode()}">' \
@@ -68,6 +75,7 @@ class Paginaton:
         page_html_list.append(prev_li)
         for i in range(page_start, page_end + 1):
             if i == self.current_page:
+                self.get_data['page'] = i
                 li_tag = f'<li class="page-item active">' \
                          f'<a class="page-link" href="?{self.get_data.urlencode()}">{i}</a></li>'
             else:
@@ -76,8 +84,8 @@ class Paginaton:
             page_html_list.append(li_tag)
         # 加下一页
         if self.current_page == self.total_page:
-            next_li = '<li class="page-item">' \
-                      '<a class="page-link" href=""><span aria-hidden="true">&raquo;</span></a></li>'
+            next_li = '<li class="page-item"><a class="page-link" href="javascript: void (0);">' \
+                      '<span aria-hidden="true">&raquo;</span></a></li>'
         else:
             self.get_data['page'] = self.current_page + 1
             next_li = f'<li class="page-item"><a class="page-link" href="?{self.get_data.urlencode()}">' \

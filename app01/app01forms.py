@@ -112,7 +112,6 @@ class CustomerModelForm(forms.ModelForm):
     def __init__(self,*args,**kwargs):
         super().__init__(*args,**kwargs)
         for name, field in self.fields.items():
-            print("++++",type(field))
             if name == 'course':
                 continue
             field.widget.attrs.update({'class':'form-control'})
