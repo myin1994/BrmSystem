@@ -30,7 +30,7 @@ enroll_status_choices = (('signed', "已报名"),
                          ('paid_in_full', "学费已交齐"))
 
 seek_status_choices = (('A', '近期无报名计划'), ('B', '1个月内报名'), ('C', '2周内报名'), ('D', '1周内报名'),
-                       ('E', '定金'), ('F', '到班'), ('G', '全款'), ('H', '无效'),)
+                       ('E', '定金'), ('F', '到班'), ('G', '全款'), ('H', '无效'),('I','未跟进'),)
 pay_type_choices = (('deposit', "订金/报名费"),
                     ('tuition', "学费"),
                     ('transfer', "转班"),
@@ -120,7 +120,7 @@ class Customer(Model):
         verbose_name_plural = '客户信息表'
 
     def __str__(self):
-        return self.name + ":" + self.qq
+        return "姓名：" + self.name +'|'+ "QQ:" + self.qq
 
     # enroll_status_choices = (('signed', "已报名"),
     #                          ('unregistered', "未报名"),
@@ -192,39 +192,39 @@ class ClassList(Model):
 #
 #
 
-# class ConsultRecord(Model):
-#     """
-#     跟进记录表
-#     """
-#     customer = ForeignKey('Customer', verbose_name="所咨询客户")
-#     note = TextField(verbose_name="跟进内容...")
-#     status = CharField("跟进状态", max_length=8, choices=seek_status_choices, help_text="选择客户此时的状态")
-#     consultant = ForeignKey("UserInfo", verbose_name="跟进人", related_name='records')
-#     date = DateTimeField("跟进日期", auto_now_add=True)
-#     delete_status = BooleanField(verbose_name='删除状态', default=False)
-#     # def __str__(self):
+class ConsultRecord(Model):
+    """
+    跟进记录表
+    """
+    customer = ForeignKey('Customer', verbose_name="所咨询客户", related_name='consult_now')
+    note = TextField(verbose_name="跟进内容...")
+    status = CharField("跟进状态", max_length=8, choices=seek_status_choices, help_text="选择客户此时的状态")
+    consultant = ForeignKey("UserInfo", verbose_name="跟进人", related_name='records')
+    date = DateTimeField("跟进日期", auto_now_add=True)
+    delete_status = BooleanField(verbose_name='删除状态', default=False)
+    def __str__(self):
+        return self.customer.name
 #
-#
-# class Enrollment(Model):
-#     """
-#     报名表
-#     """
-#     why_us = TextField("为什么报名", max_length=1024, default=None, blank=True, null=True)
-#     your_expectation = TextField("学完想达到的具体期望", max_length=1024, blank=True, null=True)
-#     # contract_agreed = BooleanField("我已认真阅读完培训协议并同意全部协议内容", default=False)
-#     contract_approved = BooleanField("审批通过", help_text="在审阅完学员的资料无误后勾选此项,合同即生效", default=False)
-#     enrolled_date = DateTimeField(auto_now_add=True, verbose_name="报名日期")
-#     memo = TextField('备注', blank=True, null=True)
-#     delete_status = BooleanField(verbose_name='删除状态', default=False)
-#     customer = ForeignKey('Customer', verbose_name='客户名称')
-#     school = ForeignKey('Campuses')
-#     enrolment_class = ForeignKey("ClassList", verbose_name="所报班级")
-#
-#     class Meta:
-#         unique_together = ('enrolment_class', 'customer')
-#
-#     def __str__(self):
-#         return self.customer.name
+class Enrollment(Model):
+    """
+    报名表
+    """
+    why_us = TextField("为什么报名", max_length=1024, default=None, blank=True, null=True)
+    your_expectation = TextField("学完想达到的具体期望", max_length=1024, blank=True, null=True)
+    # contract_agreed = BooleanField("我已认真阅读完培训协议并同意全部协议内容", default=False)
+    contract_approved = BooleanField("审批通过", help_text="在审阅完学员的资料无误后勾选此项,合同即生效", default=False)
+    enrolled_date = DateTimeField(auto_now_add=True, verbose_name="报名日期")
+    memo = TextField('备注', blank=True, null=True)
+    delete_status = BooleanField(verbose_name='删除状态', default=False)
+    customer = ForeignKey('Customer', verbose_name='客户名称')
+    school = ForeignKey('Campuses')
+    enrolment_class = ForeignKey("ClassList", verbose_name="所报班级")
+
+    class Meta:
+        unique_together = ('enrolment_class', 'customer')
+
+    def __str__(self):
+        return self.customer.name
 #
 #
 # # class PaymentRecord(Model):

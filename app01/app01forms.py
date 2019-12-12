@@ -109,9 +109,42 @@ class CustomerModelForm(forms.ModelForm):
         fields = '__all__'
         exclude = ['is_delete']
 
-    def __init__(self,*args,**kwargs):
+    def __init__(self,request,*args,**kwargs):
         super().__init__(*args,**kwargs)
         for name, field in self.fields.items():
             if name == 'course':
                 continue
+            field.widget.attrs.update({'class':'form-control'})
+
+class ConsultRecordModelForm(forms.ModelForm):
+    class Meta:
+        model = models.ConsultRecord
+        fields = '__all__'
+        exclude = ['delete_status',]
+
+    def __init__(self,request,*args,**kwargs):
+        super().__init__(*args,**kwargs)
+        for name, field in self.fields.items():
+            if name == 'customer':
+                field.queryset = models.Customer.objects.filter(
+                    is_delete=False,
+                    consultant__id=request.session.get('userid'))
+            elif name == 'consultant':
+                l1 = models.UserInfo.objects.filter(id=request.session.get('userid'))
+                field.choices = [(i.id, i.username) for i in l1]
+
+            field.widget.attrs.update({'class':'form-control'})
+
+class EnrollmentModelForm(forms.ModelForm):
+    class Meta:
+        model = models.Enrollment
+        fields = '__all__'
+        exclude = ['delete_status',]
+
+    def __init__(self,request,*args,**kwargs):
+        super().__init__(*args,**kwargs)
+        for name, field in self.fields.items():
+            if name == 'customer':
+                field.queryset = models.Customer.objects.filter(
+                    is_delete=False).exclude(status="unregistered")
             field.widget.attrs.update({'class':'form-control'})

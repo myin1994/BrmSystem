@@ -83,7 +83,7 @@ class Customers(View):
                 all_customers = models.Customer.objects.filter(is_delete=False, consultant__isnull=True)
         return all_customers
 
-    def get(self, request,msg=""):
+    def get(self, request, msg=""):
         search_model = request.GET.get('search_model')  # 查询模式
         search_value = request.GET.get('search_value')  # 查询关键字
         search_uesr = request.session.get('userid')  # 查询者id
@@ -120,19 +120,21 @@ class Customers(View):
         else:
             return redirect('app01:mycustomers')
 
+    @transaction.atomic
     def transfer_gs(self, requset, customer_lst):
-        customers = models.Customer.objects.filter(id__in=customer_lst)
-        # customers = models.Customer.objects.select_for_update().filter(id__in=customer_lst)
+        # customers = models.Customer.objects.filter(id__in=customer_lst)
+        customers = models.Customer.objects.select_for_update().filter(id__in=customer_lst)
         msg_lst = list()
         for cus in customers:
             if cus.consultant:
                 msg_lst.append(cus.name)
-        if msg_lst:
-            return self.get(requset,msg_lst)
-            # return HttpResponse(msg)
         models.Customer.objects.filter(id__in=customer_lst, consultant__isnull=True).update(
             consultant=models.UserInfo.objects.filter(id=requset.session.get("userid")).first()
         )
+        if msg_lst:
+            return self.get(requset, msg_lst)
+            # return HttpResponse(msg)
+
         return redirect('app01:customers')
 
     def transfer_sg(self, requset, customer_lst):
@@ -145,16 +147,14 @@ class Customers(View):
 class CustomerEditOrAdd(View):
     def get(self, request, cid=None):
         obj_list = models.Customer.objects.filter(id=cid)
-        customer_modelform_obj = CustomerModelForm(instance=obj_list.first())
+        customer_modelform_obj = CustomerModelForm(request,instance=obj_list.first())
         return render(request, 'sales/customer_add.html', locals())
 
     def post(self, request, cid=None):
         obj_list = models.Customer.objects.filter(id=cid)
-        customer_modelform_obj = CustomerModelForm(request.POST, instance=obj_list.first())
+        customer_modelform_obj = CustomerModelForm(request,request.POST, instance=obj_list.first())
         if customer_modelform_obj.is_valid():
             customer_modelform_obj.save()
-            # if page < 0:
-            #     page = 1
             return redirect(request.GET.get("next_url"))
         else:
             return render(request, 'sales/customer_add.html', locals())
@@ -165,3 +165,164 @@ def CustomerDel(request, cid):
         is_delete=True
     )
     return redirect(request.GET.get("next_url"))
+
+#跟进记录相关
+class ConsultRecode(View):
+    def search(self, request):
+        search_model = request.GET.get('search_model')  # 查询模式
+        search_value = request.GET.get('search_value')  # 查询关键字
+        search_uesr = request.session.get('userid')  # 查询者id
+        search_customer = request.GET.get('customer_id')  # 被查询者id
+        if search_model and search_value:
+            all_consult_recode = models.ConsultRecord.objects.filter(delete_status=False, consultant__id=search_uesr,
+                                                                     **{search_model: search_value})
+        else:
+            all_consult_recode = models.ConsultRecord.objects.filter(delete_status=False, consultant__id=search_uesr)
+
+        if search_customer:
+            all_consult_recode = all_consult_recode.filter(customer_id=search_customer)
+        return all_consult_recode.order_by("-date"),search_value
+
+    def get(self, request):
+        all_consult_recode,search_value = self.search(request)
+        page_obj = Paginaton(request.GET.get('page'), all_consult_recode.count(), request.GET)
+        all_consult_recode_filter = all_consult_recode[page_obj.start:page_obj.end]
+        page_html = page_obj.page_html()
+        return render(request, 'sales/consult_recode.html', locals())
+
+    def post(self, request):
+        bulk_action = request.POST.get("bulk_action")
+        recode_lst = request.POST.getlist("selected")
+        if hasattr(self, bulk_action):
+            ret = getattr(self, bulk_action)(request, recode_lst)
+            return ret
+        else:
+            return HttpResponse("操作无效")
+
+    def bulk_del(self, requset, recode_lst):
+        models.ConsultRecord.objects.filter(id__in=recode_lst).update(
+            delete_status=True
+        )
+        return redirect('app01:consult_recode')
+
+
+class ConsultRecodeEditOrAdd(View):
+    def get(self, request, consultrecord_id=None):
+        obj_list = models.ConsultRecord.objects.filter(id=consultrecord_id)
+        consult_modelform_obj = ConsultRecordModelForm(request, instance=obj_list.first())
+        return render(request, 'sales/consult_recode_edit.html', locals())
+
+    def post(self, request, consultrecord_id=None):
+        obj_list = models.ConsultRecord.objects.filter(id=consultrecord_id)
+        consult_modelform_obj = ConsultRecordModelForm(request, request.POST, instance=obj_list.first())
+        if consult_modelform_obj.is_valid():
+            consult_modelform_obj.save()
+            return redirect(request.GET.get("next_url"))
+        else:
+            return render(request, 'sales/consult_recode_edit.html', locals())
+
+
+def ConsultRecodeDel(request, cid):
+    models.ConsultRecord.objects.filter(pk=cid).update(
+        delete_status=True
+    )
+    return redirect(request.GET.get("next_url"))
+
+#报名记录相关
+class EnrollMent(View):
+    def search(self, request):
+        search_model = request.GET.get('search_model')  # 查询模式
+        search_value = request.GET.get('search_value')  # 查询关键字
+        search_uesr = request.session.get('userid')  # 查询者id
+        if search_model and search_value:
+            all_enrollment_recode = models.Enrollment.objects.filter(delete_status=False,
+                                                                     **{search_model: search_value})
+        else:
+            all_enrollment_recode = models.Enrollment.objects.filter(delete_status=False,)
+        return all_enrollment_recode,search_value
+
+    def get(self, request):
+        all_enrollment_recode,search_value = self.search(request)
+        page_obj = Paginaton(request.GET.get('page'), all_enrollment_recode.count(), request.GET)
+        all_enrollment_recode_filter = all_enrollment_recode[page_obj.start:page_obj.end]
+        page_html = page_obj.page_html()
+        return render(request, 'sales/enrollment_list.html', locals())
+
+    def post(self, request):
+        bulk_action = request.POST.get("bulk_action")
+        recode_lst = request.POST.getlist("selected")
+        if hasattr(self, bulk_action):
+            ret = getattr(self, bulk_action)(request, recode_lst)
+            return ret
+        else:
+            return HttpResponse("操作无效")
+
+    def bulk_del(self, requset, recode_lst):
+        models.Enrollment.objects.filter(id__in=recode_lst).update(
+            delete_status=True
+        )
+        return redirect('app01:enrollment')
+
+
+class EnrollMentEditOrAdd(View):
+    def get(self, request, form_id=None):
+        obj_list = models.Enrollment.objects.filter(id=form_id)
+        modelform_obj = EnrollmentModelForm(request,instance=obj_list.first())
+        return render(request, 'sales/add_or_edit.html', locals())
+
+    def post(self, request, form_id=None):
+        obj_list = models.Enrollment.objects.filter(id=form_id)
+        modelform_obj = EnrollmentModelForm(request,request.POST,instance=obj_list.first())
+        if modelform_obj.is_valid():
+            modelform_obj.save()
+            return redirect(request.GET.get("next_url"))
+        else:
+            return render(request, 'sales/add_or_edit.html', locals())
+
+
+def EnrollMentDel(request, cid):
+    models.Enrollment.objects.filter(pk=cid).update(
+        delete_status=True
+    )
+    return redirect(request.GET.get("next_url"))
+
+
+class AddOrEdit(View):
+
+
+    def get(self, request, form_id=None):
+        id = form_id
+        if not id:
+            id = 1
+        dic = {
+            reverse('app01:customer_edit', args=(id,)): [models.Customer, CustomerModelForm],
+            reverse('app01:customer_add'): [models.Customer, CustomerModelForm],
+            reverse('app01:consult_recode_edit', args=(id,)): [models.ConsultRecord, ConsultRecordModelForm],
+            reverse('app01:consult_recode_add'): [models.ConsultRecord, ConsultRecordModelForm],
+            reverse('app01:enrollment_edit', args=(id,)): [models.Enrollment, EnrollmentModelForm],
+            reverse('app01:enrollment_add'): [models.Enrollment, EnrollmentModelForm],
+        }
+        obj_list = dic.get(request.path)[0].objects.filter(id=form_id)
+        modelform_obj = dic.get(request.path)[1](request, instance=obj_list.first())
+        return render(request, 'sales/add_or_edit.html', locals())
+
+    def post(self, request, form_id=None):
+        id = form_id
+        if not id:
+            id = 1
+        dic = {
+            reverse('app01:customer_edit', args=(id,)): [models.Customer, CustomerModelForm],
+            reverse('app01:customer_add'): [models.Customer, CustomerModelForm],
+            reverse('app01:consult_recode_edit', args=(id,)): [models.ConsultRecord, ConsultRecordModelForm],
+            reverse('app01:consult_recode_add'): [models.ConsultRecord, ConsultRecordModelForm],
+            reverse('app01:enrollment_edit', args=(id,)): [models.Enrollment, EnrollmentModelForm],
+            reverse('app01:enrollment_add'): [models.Enrollment, EnrollmentModelForm],
+        }
+        print(dic)
+        obj_list = dic.get(request.path)[0].objects.filter(id=form_id)
+        modelform_obj = dic.get(request.path)[1](request, request.POST, instance=obj_list.first())
+        if modelform_obj.is_valid():
+            modelform_obj.save()
+            return redirect(request.GET.get("next_url"))
+        else:
+            return render(request, 'sales/add_or_edit.html', locals())

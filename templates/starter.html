@@ -228,9 +228,27 @@ scratch. This page gets rid of all links and provides the needed markup only.
                     <li class="nav-item">
                         <a href="{% url 'app01:mycustomers' %}" class="nav-link">
                             {#                        <a href="" class="nav-link">#}
-                            <i class="nav-icon fas fa-user-circle"></i>
+                            <i class="nav-icon fas fa-tasks"></i>
                             <p>
                                 我的客户
+                            </p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{% url 'app01:consult_recode' %}" class="nav-link">
+                            {#                        <a href="" class="nav-link">#}
+                            <i class="nav-icon fas fa-hand-lizard-o"></i>
+                            <p>
+                                跟进记录
+                            </p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{% url 'app01:enrollment' %}" class="nav-link">
+                            {#                        <a href="" class="nav-link">#}
+                            <i class="nav-icon fas fa-paperclip"></i>
+                            <p>
+                                报名记录
                             </p>
                         </a>
                     </li>

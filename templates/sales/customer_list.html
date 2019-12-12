@@ -5,7 +5,7 @@
 {% endblock title %}
 
 {% block content %}
-    <a href="{% url 'app01:customer_add' %}" class="btn btn-primary">添加客户</a>
+    <a href="{% url_encode request 'app01:customer_add' %}" class="btn btn-primary">添加客户</a>
     <form class="navbar-form navbar-left float-right" role="search" method="get">
         <div class="input-group mb-3">
             <div class="input-group-prepend">
@@ -66,6 +66,11 @@
                     {% endif %} >{{ customer.get_status_display }}</td>
                     <td>{{ customer.consultant.username|default:'暂无' }}</td>
                     <td>
+                        {% if request.path|customer_title == '私户信息展示' %}
+                            <a href="{% url 'app01:consult_recode' %}?customer_id={{ customer.id }}" title="查看跟进信息"><i
+                                class="fa fa-search-plus"></i>&nbsp;</a>
+                        |
+                        {% endif %}
                         <a href="{% url_encode request 'app01:customer_edit' customer.id %}" title="编辑"><i
                                 class="fa fa-pencil"></i>&nbsp;</a>
                         |<a href="{% url_encode request 'app01:customer_del' customer.id all_customers_filter|length %}"
