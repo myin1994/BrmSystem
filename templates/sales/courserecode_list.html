@@ -1,6 +1,7 @@
 {% extends 'starter.html' %}
 {% load my_tags %}
 
+
 {% block content %}
     <a href="{% url_encode request 'app01:enrollment_add' %}" class="btn btn-primary">添加报名记录</a>
     <form class="navbar-form navbar-left float-right" role="search" method="get">
@@ -32,29 +33,27 @@
                     <input type="checkbox" id="full-select">全选
                 </th>
                 <th>序号</th>
-                <th>为什么报名</th>
-                <th>具体期望</th>
-                <th>审批通过</th>
-                <th>客户名称</th>
-                <th>school</th>
-                <th>所报班级</th>
+                <th>节次</th>
+                <th>上课日期</th>
+                <th>本节课程标题</th>
+                <th>本节课程内容</th>
+                <th>班级</th>
+                <th>讲师</th>
                 <th>操作</th>
             </tr>
             </thead>
             <tbody>
-            {% for recode in all_enrollment_recode_filter %}
+            {% for recode in courser_record_lst %}
                 <tr>
                     <td><input type="checkbox" name="selected" value="{{ recode.id }}"></td>
                     <td>{{ forloop.counter }}</td>
                     {#                <td>{{ request|list_number:forloop.counter }}</td>#}
-                    <td>{{ recode.why_us|default:'空' }}</td>
-                    <td>{{ recode.your_expectation|default:'空' }}</td>
-                    <td>{% if recode.contract_approved == True %}
-                    是{% else %}否
-                    {% endif %}</td>
-                    <td>{{ recode.customer.name }}</td>
-                    <td>{{ recode.school }}</td>
-                    <td>{{ recode.enrolment_class }}</td>
+                    <td>{{ recode.day_num }}</td>
+                    <td>{{ recode.date|date:'Y-m-d' }}</td>
+                    <td>{{ recode.course_title }}</td>
+                    <td>{{ recode.course_memo }}</td>
+                    <td>{{ recode.re_class.course }}</td>
+                    <td>{{ recode.teacher.username }}</td>
                     <td>
                         <a href="{% url_encode request 'app01:enrollment_edit' recode.id %}" title="编辑"><i class="fa fa-pencil"></i>&nbsp;</a>
                         |<a href="{% url_encode request 'app01:enrollment_del' recode.id all_enrollment_recode_filter|length %}" title="删除">&nbsp;<i class="fa fa-remove"></i></a>

@@ -263,42 +263,42 @@ class Enrollment(Model):
 # # # 1 74       crm          跟进记录操作
 #
 #
-# class CourseRecord(Model):
-#     """课程记录表"""
-#     day_num = IntegerField("节次", help_text="此处填写第几节课或第几天课程...,必须为数字")
-#     date = DateField(auto_now_add=True, verbose_name="上课日期")
-#     course_title = CharField('本节课程标题', max_length=64, blank=True, null=True)
-#     course_memo = TextField('本节课程内容', max_length=300, blank=True, null=True)
-#     has_homework = BooleanField(default=True, verbose_name="本节有作业")
-#     homework_title = CharField('本节作业标题', max_length=64, blank=True, null=True)
-#     homework_memo = TextField('作业描述', max_length=500, blank=True, null=True)
-#     scoring_point = TextField('得分点', max_length=300, blank=True, null=True)
-#
-#     re_class = ForeignKey('ClassList', verbose_name="班级")
-#     teacher = ForeignKey('UserInfo', verbose_name="讲师")
-#
-#     class Meta:
-#         unique_together = ('re_class', 'day_num')
-#
-#     def __str__(self):
-#         return str(self.day_num)
-#
-#
-# class StudyRecord(Model):
-#     """
-#     学习记录
-#     """
-#     attendance = CharField("考勤", choices=attendance_choices, default="checked", max_length=64)
-#     score = IntegerField("本节成绩", choices=score_choices, default=-1)
-#     homework_note = CharField(max_length=255, verbose_name='作业批语', blank=True, null=True)
-#     date = DateTimeField(auto_now_add=True)
-#     note = CharField("备注", max_length=255, blank=True, null=True)
-#     homework = FileField(verbose_name='作业文件', blank=True, null=True, default=None)
-#     course_record = ForeignKey('CourseRecord', verbose_name="某节课程")
-#     student = ForeignKey('Customer', verbose_name="学员")
-#
-#     class Meta:
-#         unique_together = ('course_record', 'student')
-#
-#     def __str__(self):
-#         return self.student.name + ':' + str(self.course_record.day_num)
+class CourseRecord(Model):
+    """课程记录表"""
+    day_num = IntegerField("节次", help_text="此处填写第几节课或第几天课程...,必须为数字")
+    date = DateField(auto_now_add=True, verbose_name="上课日期")
+    course_title = CharField('本节课程标题', max_length=64, blank=True, null=True)
+    course_memo = TextField('本节课程内容', max_length=300, blank=True, null=True)
+    has_homework = BooleanField(default=True, verbose_name="本节有作业")
+    homework_title = CharField('本节作业标题', max_length=64, blank=True, null=True)
+    homework_memo = TextField('作业描述', max_length=500, blank=True, null=True)
+    scoring_point = TextField('得分点', max_length=300, blank=True, null=True)
+
+    re_class = ForeignKey('ClassList', verbose_name="班级")
+    teacher = ForeignKey('UserInfo', verbose_name="讲师")
+
+    class Meta:
+        unique_together = ('re_class', 'day_num')
+
+    def __str__(self):
+        return str(self.day_num)
+
+
+class StudyRecord(Model):
+    """
+    学习记录
+    """
+    attendance = CharField("考勤", choices=attendance_choices, default="checked", max_length=64)
+    score = IntegerField("本节成绩", choices=score_choices, default=-1)
+    homework_note = CharField(max_length=255, verbose_name='作业批语', blank=True, null=True)
+    date = DateTimeField(auto_now_add=True)
+    note = CharField("备注", max_length=255, blank=True, null=True)
+    homework = FileField(verbose_name='作业文件', blank=True, null=True, default=None)
+    course_record = ForeignKey('CourseRecord', verbose_name="某节课程")
+    student = ForeignKey('Customer', verbose_name="学员")
+
+    class Meta:
+        unique_together = ('course_record', 'student')
+
+    def __str__(self):
+        return self.student.name + ':' + str(self.course_record.day_num)

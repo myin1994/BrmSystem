@@ -1,8 +1,5 @@
 {% extends 'starter.html' %}
 {% load my_tags %}
-{% block title %}
-    {{ request.path|customer_title }}
-{% endblock title %}
 
 {% block content %}
     <a href="{% url_encode request 'app01:consult_recode_add' %}" class="btn btn-primary">添加跟进记录</a>

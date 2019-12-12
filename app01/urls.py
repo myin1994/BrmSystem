@@ -29,7 +29,7 @@ urlpatterns = [
      url(r'^consult_recode/del/(-*\d+)/', ConsultRecodeDel,name="consult_recode_del"),
 
 
-#跟进记录
+    #跟进记录
      url(r'^enrollment/list/', EnrollMent.as_view(),name="enrollment"),
     #编辑及添加跟进记录
      url(r'^enrollment/edit/(-*\d+)/', AddOrEdit.as_view(),name="enrollment_edit"),
@@ -38,6 +38,11 @@ urlpatterns = [
      url(r'^enrollment/add/', AddOrEdit.as_view(),name="enrollment_add"),
     #删除
      url(r'^enrollment/del/(-*\d+)/', EnrollMentDel,name="enrollment_del"),
+
+
+
+    #课程记录
+     url(r'^courserecord/list/', CourseRecordView.as_view(),name="courserecord"),
     # 错误页面
      url(r'.*', error,name="error"),
 ]

@@ -6,21 +6,19 @@ register = template.Library()
 
 
 @register.filter
-def customer_title(path):
-    if path == reverse('app01:customers'):
-        return '公户信息展示'
-    elif path == reverse('app01:mycustomers'):
-        return '私户信息展示'
-    elif path == reverse('app01:consult_recode'):
-        return '跟进记录'
-    elif path == reverse('app01:enrollment'):
-        return '报名记录'
-    else:
-        return '未知页面'
+def page_title(path):
+    dic = {
+        reverse('app01:customers'):'公户信息展示',
+        reverse('app01:mycustomers'):'私户信息展示',
+        reverse('app01:consult_recode'):'跟进记录',
+        reverse('app01:enrollment'):'报名记录',
+        reverse('app01:courserecord'):'课程记录',
+    }
+
+    return dic.get(path, '未知页面')
 
 @register.filter
-def add_or_edit_title(path,id):
-    print(">>>>>>>>>",path)
+def add_or_edit_title(path,id=1):
     if not id:
         id = 1
     dic = {
@@ -32,7 +30,7 @@ def add_or_edit_title(path,id):
         reverse('app01:enrollment_add'):'添加报名记录页面',
            }
 
-    return dic.get(path,'未知页面')
+    return dic.get(path,'还未配置')
 
 @register.filter
 def list_number(request, forloop_counter):

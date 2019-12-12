@@ -81,7 +81,7 @@ class Customers(View):
                 all_customers = models.Customer.objects.filter(is_delete=False, consultant__id=search_uesr)
             else:
                 all_customers = models.Customer.objects.filter(is_delete=False, consultant__isnull=True)
-        return all_customers
+        return all_customers.order_by('-date')
 
     def get(self, request, msg=""):
         search_model = request.GET.get('search_model')  # 查询模式
@@ -239,7 +239,7 @@ class EnrollMent(View):
                                                                      **{search_model: search_value})
         else:
             all_enrollment_recode = models.Enrollment.objects.filter(delete_status=False,)
-        return all_enrollment_recode,search_value
+        return all_enrollment_recode.order_by('-enrolled_date'),search_value
 
     def get(self, request):
         all_enrollment_recode,search_value = self.search(request)
@@ -288,41 +288,40 @@ def EnrollMentDel(request, cid):
 
 
 class AddOrEdit(View):
+    def get_obj(self,request, form_id=None):
+        id = form_id
+        if not id:
+            id = 1
+        dic = {
+            reverse('app01:customer_edit', args=(id,)): [models.Customer, CustomerModelForm],
+            reverse('app01:customer_add'): [models.Customer, CustomerModelForm],
+            reverse('app01:consult_recode_edit', args=(id,)): [models.ConsultRecord, ConsultRecordModelForm],
+            reverse('app01:consult_recode_add'): [models.ConsultRecord, ConsultRecordModelForm],
+            reverse('app01:enrollment_edit', args=(id,)): [models.Enrollment, EnrollmentModelForm],
+            reverse('app01:enrollment_add'): [models.Enrollment, EnrollmentModelForm],
+        }
+
+        obj_list = dic.get(request.path)[0].objects.filter(id=form_id)
+        if request.method == 'GET':
+            modelform_obj = dic.get(request.path)[1](request, instance=obj_list.first())
+        else:
+            modelform_obj = dic.get(request.path)[1](request,request.POST, instance=obj_list.first())
+        return obj_list,modelform_obj
 
 
     def get(self, request, form_id=None):
-        id = form_id
-        if not id:
-            id = 1
-        dic = {
-            reverse('app01:customer_edit', args=(id,)): [models.Customer, CustomerModelForm],
-            reverse('app01:customer_add'): [models.Customer, CustomerModelForm],
-            reverse('app01:consult_recode_edit', args=(id,)): [models.ConsultRecord, ConsultRecordModelForm],
-            reverse('app01:consult_recode_add'): [models.ConsultRecord, ConsultRecordModelForm],
-            reverse('app01:enrollment_edit', args=(id,)): [models.Enrollment, EnrollmentModelForm],
-            reverse('app01:enrollment_add'): [models.Enrollment, EnrollmentModelForm],
-        }
-        obj_list = dic.get(request.path)[0].objects.filter(id=form_id)
-        modelform_obj = dic.get(request.path)[1](request, instance=obj_list.first())
+        obj_list, modelform_obj = self.get_obj(request,form_id)
         return render(request, 'sales/add_or_edit.html', locals())
 
     def post(self, request, form_id=None):
-        id = form_id
-        if not id:
-            id = 1
-        dic = {
-            reverse('app01:customer_edit', args=(id,)): [models.Customer, CustomerModelForm],
-            reverse('app01:customer_add'): [models.Customer, CustomerModelForm],
-            reverse('app01:consult_recode_edit', args=(id,)): [models.ConsultRecord, ConsultRecordModelForm],
-            reverse('app01:consult_recode_add'): [models.ConsultRecord, ConsultRecordModelForm],
-            reverse('app01:enrollment_edit', args=(id,)): [models.Enrollment, EnrollmentModelForm],
-            reverse('app01:enrollment_add'): [models.Enrollment, EnrollmentModelForm],
-        }
-        print(dic)
-        obj_list = dic.get(request.path)[0].objects.filter(id=form_id)
-        modelform_obj = dic.get(request.path)[1](request, request.POST, instance=obj_list.first())
+        obj_list, modelform_obj = self.get_obj(request,form_id)
         if modelform_obj.is_valid():
             modelform_obj.save()
             return redirect(request.GET.get("next_url"))
         else:
             return render(request, 'sales/add_or_edit.html', locals())
+
+class CourseRecordView(View):
+    def get(self,request):
+        courser_record_lst = models.CourseRecord.objects.all()
+        return render(request,'sales/courserecode_list.html',locals())
