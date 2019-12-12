@@ -144,20 +144,20 @@ class Customers(View):
         return redirect('app01:mycustomers')
 
 
-class CustomerEditOrAdd(View):
-    def get(self, request, cid=None):
-        obj_list = models.Customer.objects.filter(id=cid)
-        customer_modelform_obj = CustomerModelForm(request,instance=obj_list.first())
-        return render(request, 'sales/customer_add.html', locals())
-
-    def post(self, request, cid=None):
-        obj_list = models.Customer.objects.filter(id=cid)
-        customer_modelform_obj = CustomerModelForm(request,request.POST, instance=obj_list.first())
-        if customer_modelform_obj.is_valid():
-            customer_modelform_obj.save()
-            return redirect(request.GET.get("next_url"))
-        else:
-            return render(request, 'sales/customer_add.html', locals())
+# class CustomerEditOrAdd(View):
+#     def get(self, request, cid=None):
+#         obj_list = models.Customer.objects.filter(id=cid)
+#         customer_modelform_obj = CustomerModelForm(request,instance=obj_list.first())
+#         return render(request, 'sales/customer_add.html', locals())
+#
+#     def post(self, request, cid=None):
+#         obj_list = models.Customer.objects.filter(id=cid)
+#         customer_modelform_obj = CustomerModelForm(request,request.POST, instance=obj_list.first())
+#         if customer_modelform_obj.is_valid():
+#             customer_modelform_obj.save()
+#             return redirect(request.GET.get("next_url"))
+#         else:
+#             return render(request, 'sales/customer_add.html', locals())
 
 
 def CustomerDel(request, cid):
@@ -166,7 +166,8 @@ def CustomerDel(request, cid):
     )
     return redirect(request.GET.get("next_url"))
 
-#跟进记录相关
+
+# 跟进记录相关
 class ConsultRecode(View):
     def search(self, request):
         search_model = request.GET.get('search_model')  # 查询模式
@@ -181,10 +182,10 @@ class ConsultRecode(View):
 
         if search_customer:
             all_consult_recode = all_consult_recode.filter(customer_id=search_customer)
-        return all_consult_recode.order_by("-date"),search_value
+        return all_consult_recode.order_by("-date"), search_value
 
     def get(self, request):
-        all_consult_recode,search_value = self.search(request)
+        all_consult_recode, search_value = self.search(request)
         page_obj = Paginaton(request.GET.get('page'), all_consult_recode.count(), request.GET)
         all_consult_recode_filter = all_consult_recode[page_obj.start:page_obj.end]
         page_html = page_obj.page_html()
@@ -206,20 +207,20 @@ class ConsultRecode(View):
         return redirect('app01:consult_recode')
 
 
-class ConsultRecodeEditOrAdd(View):
-    def get(self, request, consultrecord_id=None):
-        obj_list = models.ConsultRecord.objects.filter(id=consultrecord_id)
-        consult_modelform_obj = ConsultRecordModelForm(request, instance=obj_list.first())
-        return render(request, 'sales/consult_recode_edit.html', locals())
-
-    def post(self, request, consultrecord_id=None):
-        obj_list = models.ConsultRecord.objects.filter(id=consultrecord_id)
-        consult_modelform_obj = ConsultRecordModelForm(request, request.POST, instance=obj_list.first())
-        if consult_modelform_obj.is_valid():
-            consult_modelform_obj.save()
-            return redirect(request.GET.get("next_url"))
-        else:
-            return render(request, 'sales/consult_recode_edit.html', locals())
+# class ConsultRecodeEditOrAdd(View):
+#     def get(self, request, consultrecord_id=None):
+#         obj_list = models.ConsultRecord.objects.filter(id=consultrecord_id)
+#         consult_modelform_obj = ConsultRecordModelForm(request, instance=obj_list.first())
+#         return render(request, 'sales/consult_recode_edit.html', locals())
+#
+#     def post(self, request, consultrecord_id=None):
+#         obj_list = models.ConsultRecord.objects.filter(id=consultrecord_id)
+#         consult_modelform_obj = ConsultRecordModelForm(request, request.POST, instance=obj_list.first())
+#         if consult_modelform_obj.is_valid():
+#             consult_modelform_obj.save()
+#             return redirect(request.GET.get("next_url"))
+#         else:
+#             return render(request, 'sales/consult_recode_edit.html', locals())
 
 
 def ConsultRecodeDel(request, cid):
@@ -228,7 +229,8 @@ def ConsultRecodeDel(request, cid):
     )
     return redirect(request.GET.get("next_url"))
 
-#报名记录相关
+
+# 报名记录相关
 class EnrollMent(View):
     def search(self, request):
         search_model = request.GET.get('search_model')  # 查询模式
@@ -238,11 +240,11 @@ class EnrollMent(View):
             all_enrollment_recode = models.Enrollment.objects.filter(delete_status=False,
                                                                      **{search_model: search_value})
         else:
-            all_enrollment_recode = models.Enrollment.objects.filter(delete_status=False,)
-        return all_enrollment_recode.order_by('-enrolled_date'),search_value
+            all_enrollment_recode = models.Enrollment.objects.filter(delete_status=False, )
+        return all_enrollment_recode.order_by('-enrolled_date'), search_value
 
     def get(self, request):
-        all_enrollment_recode,search_value = self.search(request)
+        all_enrollment_recode, search_value = self.search(request)
         page_obj = Paginaton(request.GET.get('page'), all_enrollment_recode.count(), request.GET)
         all_enrollment_recode_filter = all_enrollment_recode[page_obj.start:page_obj.end]
         page_html = page_obj.page_html()
@@ -267,12 +269,12 @@ class EnrollMent(View):
 class EnrollMentEditOrAdd(View):
     def get(self, request, form_id=None):
         obj_list = models.Enrollment.objects.filter(id=form_id)
-        modelform_obj = EnrollmentModelForm(request,instance=obj_list.first())
+        modelform_obj = EnrollmentModelForm(request, instance=obj_list.first())
         return render(request, 'sales/add_or_edit.html', locals())
 
     def post(self, request, form_id=None):
         obj_list = models.Enrollment.objects.filter(id=form_id)
-        modelform_obj = EnrollmentModelForm(request,request.POST,instance=obj_list.first())
+        modelform_obj = EnrollmentModelForm(request, request.POST, instance=obj_list.first())
         if modelform_obj.is_valid():
             modelform_obj.save()
             return redirect(request.GET.get("next_url"))
@@ -287,8 +289,9 @@ def EnrollMentDel(request, cid):
     return redirect(request.GET.get("next_url"))
 
 
+# 添加编辑视图（可追加url）
 class AddOrEdit(View):
-    def get_obj(self,request, form_id=None):
+    def get_obj(self, request, form_id=None):
         id = form_id
         if not id:
             id = 1
@@ -299,29 +302,125 @@ class AddOrEdit(View):
             reverse('app01:consult_recode_add'): [models.ConsultRecord, ConsultRecordModelForm],
             reverse('app01:enrollment_edit', args=(id,)): [models.Enrollment, EnrollmentModelForm],
             reverse('app01:enrollment_add'): [models.Enrollment, EnrollmentModelForm],
+            reverse('app01:courserecord_edit', args=(id,)): [models.CourseRecord, CourseRecordModelForm],
+            reverse('app01:courserecord_add'): [models.CourseRecord, CourseRecordModelForm],
         }
 
         obj_list = dic.get(request.path)[0].objects.filter(id=form_id)
         if request.method == 'GET':
             modelform_obj = dic.get(request.path)[1](request, instance=obj_list.first())
         else:
-            modelform_obj = dic.get(request.path)[1](request,request.POST, instance=obj_list.first())
-        return obj_list,modelform_obj
-
+            modelform_obj = dic.get(request.path)[1](request, request.POST, instance=obj_list.first())
+        return obj_list, modelform_obj
 
     def get(self, request, form_id=None):
-        obj_list, modelform_obj = self.get_obj(request,form_id)
+        obj_list, modelform_obj = self.get_obj(request, form_id)
         return render(request, 'sales/add_or_edit.html', locals())
 
     def post(self, request, form_id=None):
-        obj_list, modelform_obj = self.get_obj(request,form_id)
+        obj_list, modelform_obj = self.get_obj(request, form_id)
         if modelform_obj.is_valid():
             modelform_obj.save()
             return redirect(request.GET.get("next_url"))
         else:
             return render(request, 'sales/add_or_edit.html', locals())
 
+
 class CourseRecordView(View):
-    def get(self,request):
-        courser_record_lst = models.CourseRecord.objects.all()
-        return render(request,'sales/courserecode_list.html',locals())
+    def search(self, request):
+        search_model = request.GET.get('search_model')  # 查询模式
+        search_value = request.GET.get('search_value')  # 查询关键字
+        search_uesr = request.session.get('userid')  # 查询者id
+        if search_model and search_value:
+            all_courser_recode = models.CourseRecord.objects.all().filter(**{search_model: search_value})
+        else:
+            all_courser_recode = models.CourseRecord.objects.all()
+        return all_courser_recode.order_by('-date'), search_value
+
+    def get(self, request, msg=''):
+        all_courser_recode, search_value = self.search(request)
+        page_obj = Paginaton(request.GET.get('page'), all_courser_recode.count(), request.GET)
+        all_courser_recode_filter = all_courser_recode[page_obj.start:page_obj.end]
+        page_html = page_obj.page_html()
+        return render(request, 'sales/courserecode_list.html', locals())
+
+    def post(self, request):
+        bulk_action = request.POST.get("bulk_action")
+        recode_lst = request.POST.getlist("selected")
+        if hasattr(self, bulk_action):
+            ret = getattr(self, bulk_action)(request, recode_lst)
+            return ret
+        else:
+            return HttpResponse("操作无效")
+
+    def bulk_del(self, requset, recode_lst):
+        """
+        批量删除
+        @param requset:
+        @param recode_lst:
+        @return:
+        """
+        models.CourseRecord.objects.filter(id__in=recode_lst).delete()
+        return redirect('app01:enrollment')
+
+    def bulk_create_studyrecord(self, requset, recode_lst):
+        """
+        批量生成对应班级的学习记录（对应学习中的客户）
+        @param requset:
+        @param recode_lst:
+        @return:
+        """
+        msg = ""
+        try:
+            with transaction.atomic():
+                study = list()
+                for course_id in recode_lst:
+                    course_obj = models.CourseRecord.objects.filter(id=course_id).first()
+                    students_objs = course_obj.re_class.customer_set.filter(status='studying')
+                    if not students_objs:
+                        raise TypeError("待添加对象不存在")
+                    for student_obj in students_objs:
+                        study_obj = models.StudyRecord(course_record_id=course_id, student=student_obj)
+                        study.append(study_obj)
+                models.StudyRecord.objects.bulk_create(study)
+                msg = 'success'
+                return self.get(requset, msg)
+        except IntegrityError:
+            msg = 'filed'
+            return self.get(requset, msg)
+        except TypeError:
+            msg = 'null'
+            return self.get(requset, msg)
+        except Exception as e:
+            msg = 'error'
+            return self.get(requset, msg)
+
+
+def CourseRecordDel(request, cid):
+    models.CourseRecord.objects.filter(pk=cid).delete()
+    return redirect(request.GET.get("next_url"))
+
+
+from django.forms import modelformset_factory
+
+
+class StudyRecordView(View):
+
+    def get(self, request, form_id=1):
+        all_study_recode = models.StudyRecord.objects.filter(course_record=form_id)
+        page_obj = Paginaton(request.GET.get('page'), all_study_recode.count(), request.GET)
+        page_html = page_obj.page_html()
+        all_study_recode_filter = modelformset_factory(models.StudyRecord, StudyRecordModelForm, extra=0)(
+            queryset=all_study_recode.order_by("id")[page_obj.start:page_obj.end]
+        )
+        return render(request, 'sales/studyrecode_list.html', locals())
+
+    def post(self, request, form_id=1):
+        all_study_recode = modelformset_factory(models.StudyRecord, StudyRecordModelForm, extra=0)
+        all_study_recode = all_study_recode(request.POST)
+        if all_study_recode.is_valid():
+            all_study_recode.save()
+            return redirect(request.path)
+
+        else:
+            return render(request, 'sales/studyrecode_list.html', locals())

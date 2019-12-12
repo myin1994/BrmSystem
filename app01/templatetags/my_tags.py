@@ -1,7 +1,5 @@
 from django import template
-
 from django.urls import reverse
-
 register = template.Library()
 
 
@@ -28,6 +26,9 @@ def add_or_edit_title(path,id=1):
         reverse('app01:consult_recode_add'):'添加跟进记录页面',
         reverse('app01:enrollment_edit',args=(id,)):'编辑报名记录页面',
         reverse('app01:enrollment_add'):'添加报名记录页面',
+        reverse('app01:courserecord_edit', args=(id,)): '编辑课程记录页面',
+        reverse('app01:courserecord_add'): '添加课程记录页面',
+        reverse('app01:studyrecord', args=(id,)): '学习记录页面',
            }
 
     return dic.get(path,'还未配置')

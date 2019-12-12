@@ -1,0 +1,89 @@
+{% extends 'starter.html' %}
+{% load my_tags %}
+
+{% block title %}
+    {{ request.path|add_or_edit_title:form_id }}
+{% endblock %}
+
+{% block content %}
+    <form class="navbar-form navbar-left float-right" role="search" method="get">
+        <div class="input-group mb-3">
+            <div class="input-group-prepend">
+                <select class="form-control" name="search_model">
+                    <option value="customer__name__icontains" {% if search_model == 'customer__name__icontains' %}
+                            selected
+                    {% endif %} >姓名
+                    </option>
+                </select>
+            </div>
+            <div>
+                <input type="text" class="form-control" placeholder="Search" aria-label="Recipient's username"
+                       aria-describedby="button-addon2" name="search_value" {% if search_value %}
+                       value="{{ search_value }}"
+                {% endif %} ></div>
+            <div class="input-group-append">
+                <button class="btn btn-outline-secondary" type="submit" id="button-addon2">搜索</button>
+            </div>
+        </div>
+    </form>
+    {{ all_study_recode_filter.errors }}
+    <form action="" method="post">
+        {% csrf_token %}
+        {{ all_study_recode_filter.management_form }}
+        <table class="table table-bordered table-hover table-striped">
+            <thead class="thead-dark">
+            <tr>
+                <th>序号</th>
+                <th>考勤</th>
+                <th>本节成绩</th>
+                <th>作业批语</th>
+                <th>某节课程</th>
+                <th>学员</th>
+                <th>操作</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for recode in all_study_recode_filter %}
+                <tr>
+                    {{ recode.id }}
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ recode.attendance }}</td>
+                    <td>{{ recode.score }}</td>
+                    <td>{{ recode.homework_note }}</td>
+                    <td>{{ recode.instance.course_record }}</td>
+                    <td hidden>{{ recode.course_record }}</td>
+                    <td>{{ recode.instance.student }}</td>
+                    <td hidden>{{ recode.student }}</td>
+                    <td>
+                        <a href="" title="编辑"><i
+                                class="fa fa-pencil"></i>&nbsp;</a>
+                    </td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="10">当前无记录！</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        <div class="row">
+            <div class="col-sm-6">{{ page_html|safe }}</div>
+            <div class="input-group mb-3 col-sm-1 offset-5">
+                <button class="btn btn-outline-secondary" type="submit" id="button-addon2">保存</button>
+            </div>
+        </div>
+    </form>
+
+{% endblock %}
+
+{% block jscode %}
+    <script>
+        $("#full-select").click(function () {
+            if ($(this).prop('checked')) {
+                $("[name='selected']").prop('checked', true);
+            } else {
+                $("[name='selected']").prop('checked', false);
+            }
+        });
+    </script>
+{% endblock %}

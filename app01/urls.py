@@ -43,6 +43,14 @@ urlpatterns = [
 
     #课程记录
      url(r'^courserecord/list/', CourseRecordView.as_view(),name="courserecord"),
+    #编辑及添加课程记录
+     url(r'^courserecord/edit/(-*\d+)/', AddOrEdit.as_view(),name="courserecord_edit"),
+     url(r'^courserecord/add/', AddOrEdit.as_view(),name="courserecord_add"),
+    #删除课程记录
+     url(r'^courserecord/del/(-*\d+)/', CourseRecordDel,name="courserecord_del"),
+
+    #学习记录展示
+     url(r'^studyrecord/list/(-*\d+)/', StudyRecordView.as_view(),name="studyrecord"),
     # 错误页面
      url(r'.*', error,name="error"),
 ]

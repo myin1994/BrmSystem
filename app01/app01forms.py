@@ -148,3 +148,19 @@ class EnrollmentModelForm(forms.ModelForm):
                 field.queryset = models.Customer.objects.filter(
                     is_delete=False).exclude(status="unregistered")
             field.widget.attrs.update({'class':'form-control'})
+
+class CourseRecordModelForm(forms.ModelForm):
+    class Meta:
+        model = models.CourseRecord
+        fields = '__all__'
+
+    def __init__(self,request,*args,**kwargs):
+        super().__init__(*args,**kwargs)
+        for name, field in self.fields.items():
+            field.widget.attrs.update({'class':'form-control'})
+
+class StudyRecordModelForm(forms.ModelForm):
+
+    class Meta:
+        model = models.StudyRecord
+        fields = '__all__'
