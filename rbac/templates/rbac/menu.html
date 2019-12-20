@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+{% for obj in request.session.menu %}
+    <li class="nav-item has-treeview menu-open">
+        <a href="#" class="nav-link active">
+            <i class="nav-icon fa {{ obj.icon }}"></i>
+            <p>
+                {{ obj.title }}
+                <i class="right fas fa-angle-left"></i>
+            </p>
+        </a>
+        <ul class="nav nav-treeview">
+            {% for menu in obj.secondary_menu %}
+                <li class="nav-item">
+                    <a href="{{ menu.url }}"
+                       class="nav-link {% if menu.id == request.url_id or request.path == menu.url %}
+                   active
+                {% endif %}">
+                        <p><i class="fa {{ menu.icon }}"></i>{{ menu.access_name }}</p>
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
+    </li>
+
+{% endfor %}
+
+</body>
+</html>

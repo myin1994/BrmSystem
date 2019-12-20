@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<ol class="breadcrumb float-sm-right">
+                            <li class="breadcrumb-item"><a href="{% url 'app01:home' %}">首页</a></li>
+    {% for obj in request.session.menu %}
+    {% for menu in obj.secondary_menu %}
+        {% if menu.id == request.url_id %}
+            <li class="breadcrumb-item active"><a href=" {{ menu.url }}">{{ menu.access_name }}</a></li>
+        {% endif %}
+        {% if request.path == menu.url %}
+            <li class="breadcrumb-item active">{{ menu.access_name }}</li>
+        {% endif %}
+        {% if menu.id == request.url_id %}
+            <li class="breadcrumb-item active">{{ request.url_title }}</li>
+        {% endif %}
+    {% endfor %}
+{% endfor %}
+                        </ol>
+{#<li><a href="{% url 'web:home' %}">首页</a></li>#}
+{#{% for obj in request.session.menu %}#}
+{#    {% for menu in obj.secondary_menu %}#}
+{#        {% if menu.id == request.url_id %}#}
+{#            <li class="active"><a href=" {{ menu.url }}">{{ menu.access_name }}</a></li>#}
+{#        {% endif %}#}
+{#        {% if request.path == menu.url %}#}
+{#            <li class="active">{{ menu.access_name }}</li>#}
+{#        {% endif %}#}
+{#        {% if menu.id == request.url_id %}#}
+{#            <li class="active">{{ request.url_title }}</li>#}
+{#        {% endif %}#}
+{#    {% endfor %}#}
+{#{% endfor %}#}
+
+
+</body>
+</html>

@@ -51,6 +51,6 @@ urlpatterns = [
 
     #学习记录展示
      url(r'^studyrecord/list/(-*\d+)/', StudyRecordView.as_view(),name="studyrecord"),
-    # 错误页面
-     url(r'.*', error,name="error"),
+    # # 错误页面
+    #  url(r'.*', error,name="error"),
 ]

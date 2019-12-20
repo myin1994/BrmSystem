@@ -1,5 +1,5 @@
 from django.db.models import *
-
+from rbac.models import UserInfo as Userinfo
 from multiselectfield import MultiSelectField
 # from django.utils.safestring import mark_safe
 # from rbac.models import User
@@ -57,7 +57,7 @@ score_choices = ((100, 'A+'),
                  (-1000, 'FAIL'),)
 
 
-class UserInfo(Model):
+class UserInfo(Userinfo):
     username = CharField(max_length=16, blank=False, unique=True)
     password = CharField(max_length=32, blank=False)
     telephone = CharField(max_length=20, blank=False)

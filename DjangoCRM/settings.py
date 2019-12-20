@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'app01.apps.App01Config',
+    'rbac',
 ]
 
 MIDDLEWARE = [
@@ -51,6 +52,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'app01.mymiddleware.login_sign.Login_sign',
+    'rbac.rbacmiddleware.auth.UrlAuth',
 ]
 
 ROOT_URLCONF = 'DjangoCRM.urls'

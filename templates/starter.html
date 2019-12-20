@@ -22,6 +22,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <link rel="stylesheet" href="{% static 'dist/css/adminlte.min.css' %}">
     <!-- Google Font: Source Sans Pro -->
     <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'rbac/css/menu.css' %} "/>
     <style>
         .table tbody tr td {
             vertical-align: middle;
@@ -194,74 +195,9 @@ scratch. This page gets rid of all links and provides the needed markup only.
                     data-accordion="false">
                     <!-- Add icons to the links using the .nav-icon class
                          with font-awesome or any other icon font library -->
-                    <li class="nav-item has-treeview menu-open">
-                        <a href="#" class="nav-link active">
-                            <i class="nav-icon fas fa-tachometer-alt"></i>
-                            <p>
-                                Starter Pages
-                                <i class="right fas fa-angle-left"></i>
-                            </p>
-                        </a>
-                        <ul class="nav nav-treeview">
-                            <li class="nav-item">
-                                <a href="#" class="nav-link active">
-                                    <i class="far fa-circle nav-icon"></i>
-                                    <p>Active Page</p>
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="#" class="nav-link">
-                                    <i class="far fa-circle nav-icon"></i>
-                                    <p>Inactive Page</p>
-                                </a>
-                            </li>
-                        </ul>
-                    </li>
-                    <li class="nav-item">
-                        <a href="{% url 'app01:customers' %}" class="nav-link">
-                            <i class="nav-icon fas fa-th"></i>
-                            <p>
-                                公户管理
-                                <span class="right badge badge-danger">New</span>
-                            </p>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="{% url 'app01:mycustomers' %}" class="nav-link">
-                            {#                        <a href="" class="nav-link">#}
-                            <i class="nav-icon fas fa-tasks"></i>
-                            <p>
-                                我的客户
-                            </p>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="{% url 'app01:consult_recode' %}" class="nav-link">
-                            {#                        <a href="" class="nav-link">#}
-                            <i class="nav-icon fas fa-hand-lizard-o"></i>
-                            <p>
-                                跟进记录
-                            </p>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="{% url 'app01:enrollment' %}" class="nav-link">
-                            {#                        <a href="" class="nav-link">#}
-                            <i class="nav-icon fas fa-paperclip"></i>
-                            <p>
-                                报名记录
-                            </p>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="{% url 'app01:courserecord' %}" class="nav-link">
-                            {#                        <a href="" class="nav-link">#}
-                            <i class="nav-icon fas fa-book"></i>
-                            <p>
-                                课程记录
-                            </p>
-                        </a>
-                    </li>
+                    <!--左侧菜单栏引入-->
+                    {% include 'rbac/menu.html' %}
+
                 </ul>
             </nav>
             <!-- /.sidebar-menu -->
@@ -283,10 +219,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                         </h1>
                     </div><!-- /.col -->
                     <div class="col-sm-6">
-                        <ol class="breadcrumb float-sm-right">
-                            <li class="breadcrumb-item"><a href="#">Home</a></li>
-                            <li class="breadcrumb-item active">Starter Page</li>
-                        </ol>
+                        {% include 'rbac/bread_crumb.html' %}
                     </div><!-- /.col -->
                 </div><!-- /.row -->
             </div><!-- /.container-fluid -->
@@ -333,7 +266,34 @@ scratch. This page gets rid of all links and provides the needed markup only.
 <script src="{% static 'plugins/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
 <!-- AdminLTE App -->
 <script src="{% static 'dist/js/adminlte.min.js' %}"></script>
+
+<!--rbac -->
+{#<script src="{% static 'rbac/js/menu_control.js' %}"></script>#}
+<script src="{% static 'rbac/js/table_control.js' %}"></script>
 </body>
+
+<script>
+    (function () {
+        var a = $('[auth]');
+        var allowed = {{ request.button_url|safe }};
+        for (var i = 0; i < a.length; ++i) {
+            var href = a.eq(i).attr('href');
+            var target = i;
+            var count = 0;
+            for (var url of allowed) {
+                var patt = url.url;
+                var pattern = new RegExp(patt);
+                if (pattern.exec(href) === null) {
+                    count++;
+                }
+            }
+            if (count === allowed.length) {
+                a.eq(target).remove();
+            }
+
+        }
+    })();
+</script>
 {% block jscode %}
 
 {% endblock jscode %}
